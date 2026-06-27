@@ -1,0 +1,29 @@
+/* LogoLoop.css */
+
+/* Container for the scrolling logos */
+.logo-loop {
+  /* Optional background or padding styling */
+}
+
+/* Inner wrapper that will be animated */
+.logo-loop-inner {
+  /* Ensure the logos are displayed inline */
+  white-space: nowrap;
+}
+
+/* Animation: continuous scroll to the left */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Apply the animation */
+.animate-scroll {
+  display: flex;
+  animation: scroll 20s linear infinite;
+}
