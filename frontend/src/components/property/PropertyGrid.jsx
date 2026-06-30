@@ -5,12 +5,11 @@ import PropertyCard from "./PropertyCard";
 function PropertyGrid({
     selectedBHK,
     selectedType,
-    selectedBudget // Optional: matching your added budget state
+    selectedBudget
 }) {
     const [search, setSearch] = useState("");
     const [sortBy, setSortBy] = useState("Newest");
 
-    // Dynamic Filter Loop
     const filteredProperties = properties.filter((property) => {
         const matchesSearch = property.location
             .toLowerCase()
@@ -20,8 +19,6 @@ function PropertyGrid({
 
         const matchesType = selectedType === "" || property.type === selectedType;
 
-        // Budget evaluation matching your filter architecture (Assumes numeric or rough parsed keys)
-        // Adjust if your property data structure uses raw values instead of numerical ranges
         let matchesBudget = true;
         if (selectedBudget === "25L-50L") matchesBudget = property.priceNumeric >= 2500000 && property.priceNumeric <= 5000000;
         if (selectedBudget === "50L-1Cr") matchesBudget = property.priceNumeric > 5000000 && property.priceNumeric <= 10000000;
@@ -30,11 +27,10 @@ function PropertyGrid({
         return matchesSearch && matchesBHK && matchesType && matchesBudget;
     });
 
-    // Handle Selective Asset Sorting
     const sortedProperties = [...filteredProperties].sort((a, b) => {
         if (sortBy === "Price Low to High") return a.priceNumeric - b.priceNumeric;
         if (sortBy === "Price High to Low") return b.priceNumeric - a.priceNumeric;
-        return b.id - a.id; // Fallback default sorting behavior (Newest/ID sequence)
+        return b.id - a.id;
     });
 
     return (
@@ -48,8 +44,18 @@ function PropertyGrid({
                     onChange={(e) => setSearch(e.target.value)}
                     className="w-full px-5 py-4 bg-white/[0.02] text-stone-200 placeholder-stone-600 border border-white/10 rounded-2xl outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition duration-200 text-sm"
                 />
-                <span className="absolute right-5 top-1/2 -translate-y-1/2 text-stone-600 text-sm pointer-events-none">
-                    🔍
+                {/* SVG Icon replaced the raw 🔍 emoji */}
+                <span className="absolute right-5 top-1/2 -translate-y-1/2 text-stone-600 pointer-events-none">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-5 h-5"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
+                    </svg>
                 </span>
             </div>
 
