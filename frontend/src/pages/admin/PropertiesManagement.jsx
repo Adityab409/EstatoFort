@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaMapMarkerAlt, FaSearch, FaPlus, FaRegEdit } from "react-icons/fa";
 
 const propertiesData = [
     {
@@ -36,11 +38,20 @@ const getStatusStyles = (status) => {
 };
 
 function PropertiesManagement() {
-    // Interactive states for pipeline indexing
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("All Status Inventory");
 
-    // Filter pipeline logic
+    // Animation presets to match Hero Section ease-out curves
+    const cardVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: (idx) => ({
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: idx * 0.05 }
+        }),
+        exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } }
+    };
+
     const filteredProperties = propertiesData.filter((property) => {
         const matchesSearch =
             property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -56,127 +67,157 @@ function PropertiesManagement() {
     });
 
     return (
-        <div className="w-full max-w-6xl mx-auto space-y-6 px-1">
+        <div className="w-full max-w-6xl mx-auto space-y-8 px-4 sm:px-6">
 
-            {/* COMPONENT SUB-HEADER WITH INTERACTION TRIGGERS */}
-            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+            {/* HEADER METRICS PORTAL */}
+            <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4 border-b border-white/5 pb-6">
                 <div>
-
-                    <h1 className="text-xl font-black uppercase tracking-wider text-white">
-                        Property Portfolio
+                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+                        Property <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-[#D4AF37] to-amber-500">Portfolio</span>
                     </h1>
-                    <p className="text-xs text-stone-500 uppercase tracking-widest mt-0.5">
-                        Inventory & Asset Control ({filteredProperties.length})
+                    <p className="text-[10px] sm:text-xs font-semibold text-stone-500 uppercase tracking-widest mt-1">
+                        Live Inventory & Asset Control ({filteredProperties.length})
                     </p>
                 </div>
 
                 <button
                     onClick={() => alert("Open Add Asset Modal/Form")}
-                    className="sm:self-center bg-[#D4AF37] text-stone-950 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-[#bfa032] active:scale-[0.98] transition-all shadow-[0_0_15px_rgba(212,175,55,0.15)] cursor-pointer"
+                    className="sm:self-center inline-flex items-center justify-center gap-2 bg-[#D4AF37] text-stone-950 px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-[#bfa032] active:scale-[0.98] transition-all shadow-lg shadow-amber-500/5 cursor-pointer select-none"
                 >
-                    + Add New Asset
+                    <FaPlus className="text-[10px]" /> Add New Asset
                 </button>
             </div>
 
-            {/* QUICK FILTERS BLOCK */}
-            <div className="bg-[#111111] p-4 rounded-2xl border border-white/10 shadow-lg">
-                <div className="flex flex-col sm:flex-row gap-3">
+            {/* PREMIUM FILTERS SYSTEM DOCK */}
+            <div className="bg-white/[0.01] backdrop-blur-md p-4 rounded-2xl border border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+                <div className="flex flex-col sm:flex-row gap-4">
+                    {/* Search Field Input */}
                     <div className="relative flex-1">
+                        <span className="absolute left-4 top-3.5 text-stone-500 text-xs">
+                            <FaSearch />
+                        </span>
                         <input
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search real estate index by name or location..."
-                            className="w-full bg-white/[0.03] border border-white/10 text-white placeholder-stone-500 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-[#D4AF37]/50 focus:bg-white/[0.05] transition-all duration-200"
+                            placeholder="Search real estate index by asset title or location..."
+                            className="w-full bg-white/[0.03] border border-white/5 text-white placeholder-stone-500 rounded-xl pl-10 pr-12 py-3 text-xs focus:outline-none focus:border-[#D4AF37]/40 focus:bg-white/[0.05] focus:ring-1 focus:ring-[#D4AF37]/10 transition-all duration-200"
                         />
                         {searchQuery && (
                             <button
                                 onClick={() => setSearchQuery("")}
-                                className="absolute right-3 top-2.5 text-stone-500 hover:text-white text-xs"
+                                className="absolute right-4 top-3 text-[10px] uppercase font-bold tracking-wider text-stone-500 hover:text-white transition-colors"
                             >
                                 Clear
                             </button>
                         )}
                     </div>
-                    <div className="w-full sm:w-64">
+
+                    {/* Select Dropdown Menu */}
+                    <div className="w-full sm:w-64 relative">
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="w-full bg-white/[0.03] border border-white/10 text-stone-400 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-[#D4AF37]/50 focus:bg-white/[0.05] transition-all duration-200 cursor-pointer appearance-none"
-                            style={{ backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(168,162,158,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>")`, backgroundPosition: 'right 16px center', backgroundSize: '14px', backgroundRepeat: 'no-repeat' }}
+                            className="w-full bg-[#0d0d0d] border border-white/5 text-stone-300 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-[#D4AF37]/40 focus:ring-1 focus:ring-[#D4AF37]/10 transition-all duration-200 cursor-pointer appearance-none"
+                            style={{
+                                backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(212,175,55,0.6)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>")`,
+                                backgroundPosition: 'right 16px center',
+                                backgroundSize: '14px',
+                                backgroundRepeat: 'no-repeat'
+                            }}
                         >
-                            <option value="All Status Inventory" className="bg-[#111111] text-white">All Status Inventory</option>
-                            <option value="Active Listings" className="bg-[#111111] text-white">Active Listings</option>
-                            <option value="Sold / Archived" className="bg-[#111111] text-white">Sold / Archived</option>
+                            <option value="All Status Inventory" className="bg-neutral-950">All Status Inventory</option>
+                            <option value="Active Listings" className="bg-neutral-950">Active Listings</option>
+                            <option value="Sold / Archived" className="bg-neutral-950">Sold / Archived</option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            {/* PORTFOLIO GRID HOUSING DATA */}
-            {filteredProperties.length > 0 ? (
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-                    {filteredProperties.map((property) => (
-                        <div
-                            key={property.id}
-                            className="bg-[#111111] border border-white/10 rounded-2xl p-5 shadow-xl flex flex-col justify-between relative group hover:border-white/20 transition-all duration-300 overflow-hidden min-h-[200px]"
+            {/* PORTFOLIO PIPELINE REALESTATE CARDS GRID */}
+            <div className="relative min-h-[250px]">
+                <AnimatePresence mode="popLayout">
+                    {filteredProperties.length > 0 ? (
+                        <motion.div
+                            layout
+                            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
                         >
-                            {/* Dynamic Top Edge Glow Trim */}
-                            <div className="absolute top-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#D4AF37] to-amber-400 group-hover:w-full transition-all duration-500 ease-out" />
-
-                            {/* CARD CONTENT LAYER */}
-                            <div>
-                                <div className="flex justify-between items-center mb-4">
-                                    <span className="text-[9px] font-mono font-bold text-stone-600 tracking-wider">
-                                        REG-ID #00{property.id}
-                                    </span>
-                                    <span className={`text-[9px] font-black tracking-widest px-2 py-0.5 rounded border uppercase ${getStatusStyles(property.status)}`}>
-                                        {property.status}
-                                    </span>
-                                </div>
-
-                                <h3 className="font-black text-white text-base tracking-tight group-hover:text-[#D4AF37] transition-colors duration-200 line-clamp-1">
-                                    {property.title}
-                                </h3>
-
-                                <div className="flex items-center gap-1.5 mt-2 text-stone-400">
-                                    <svg className="w-3.5 h-3.5 text-stone-600 group-hover:text-[#D4AF37] transition-colors shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25s-7.5-4.108-7.5-11.25a7.5 7.5 0 1115 0z" />
-                                    </svg>
-                                    <span className="text-xs font-semibold uppercase tracking-wider text-stone-400">{property.location}</span>
-                                </div>
-                            </div>
-
-                            {/* BOTTOM VALUATION BLOCK */}
-                            <div className="mt-6 pt-4 border-t border-white/5 flex justify-between items-center">
-                                <div>
-                                    <span className="text-[9px] font-bold uppercase tracking-widest text-stone-500 block">
-                                        Market Value
-                                    </span>
-                                    <span className="text-xl font-black tracking-tight text-white mt-0.5 block">
-                                        {property.price}
-                                    </span>
-                                </div>
-
-                                <button
-                                    onClick={() => alert(`Editing Asset ID: ${property.id}`)}
-                                    className="w-8 h-8 rounded-lg bg-white/5 hover:bg-[#D4AF37]/10 border border-white/5 hover:border-[#D4AF37]/30 flex items-center justify-center text-stone-400 hover:text-[#D4AF37] transition-all cursor-pointer"
+                            {filteredProperties.map((property, idx) => (
+                                <motion.div
+                                    key={property.id}
+                                    custom={idx}
+                                    variants={cardVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    exit="exit"
+                                    layoutId={`card-${property.id}`}
+                                    whileHover={{ y: -4 }}
+                                    className="bg-white/[0.02] backdrop-blur-sm border border-white/10 rounded-2xl p-5 shadow-xl flex flex-col justify-between relative group hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300 overflow-hidden min-h-[190px]"
                                 >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                /* EMPTY STATE CASE */
-                <div className="text-center py-12 bg-[#111111] rounded-2xl border border-white/5">
-                    <p className="text-sm text-stone-500 uppercase tracking-widest">No assets match your current search constraints.</p>
-                </div>
-            )}
+                                    {/* Ambient Luxury Top Glow Trim */}
+                                    <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-amber-200 via-[#D4AF37] to-amber-500 opacity-30 group-hover:opacity-100 transition-all duration-500" />
+
+                                    {/* TOP SECTION: ID & STATUS BADGE */}
+                                    <div>
+                                        <div className="flex justify-between items-center mb-4">
+                                            <span className="text-[9px] font-mono font-bold text-stone-600 tracking-wider">
+                                                REG-ID #00{property.id}
+                                            </span>
+                                            <span className={`text-[9px] font-black tracking-widest px-2.5 py-0.5 rounded-md border uppercase ${getStatusStyles(property.status)}`}>
+                                                {property.status}
+                                            </span>
+                                        </div>
+
+                                        {/* TITLE */}
+                                        <h3 className="font-bold text-white text-base tracking-tight group-hover:text-[#D4AF37] transition-colors duration-300 line-clamp-1">
+                                            {property.title}
+                                        </h3>
+
+                                        {/* LOCATION SUB-LABEL */}
+                                        <div className="flex items-center gap-1.5 mt-2 text-stone-400">
+                                            <FaMapMarkerAlt className="text-[11px] text-stone-600 group-hover:text-[#D4AF37] transition-colors shrink-0" />
+                                            <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-500">
+                                                {property.location}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* BOTTOM SECTION: PRICING GUIDE & EDIT ATTACHMENT */}
+                                    <div className="mt-6 pt-4 border-t border-white/5 flex justify-between items-center">
+                                        <div>
+                                            <span className="text-[9px] font-bold uppercase tracking-widest text-stone-500 block">
+                                                Market Asset Valuation
+                                            </span>
+                                            <span className="text-xl font-black tracking-tight text-white mt-0.5 block">
+                                                {property.price}
+                                            </span>
+                                        </div>
+
+                                        <button
+                                            onClick={() => alert(`Editing Asset ID: ${property.id}`)}
+                                            className="w-9 h-9 rounded-xl bg-white/5 hover:bg-[#D4AF37]/10 border border-white/5 hover:border-[#D4AF37]/20 flex items-center justify-center text-stone-400 hover:text-[#D4AF37] active:scale-95 transition-all cursor-pointer"
+                                            title="Edit Property Asset"
+                                        >
+                                            <FaRegEdit className="text-sm" />
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                    ) : (
+                        /* LUXURY EMPTY DATA SYSTEM STATE */
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 text-center py-16 bg-white/[0.01] rounded-2xl border border-white/5 flex flex-col items-center justify-center gap-2"
+                        >
+                            <p className="text-xs font-bold text-stone-400 uppercase tracking-widest">No Verified Matches Found</p>
+                            <p className="text-xs text-stone-600 font-light max-w-xs">Adjust your search parameters or filter preferences to inventory another premium asset tier.</p>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
         </div>
     );
 }
